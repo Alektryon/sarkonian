@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarkonian Mesh-Tag Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* VOICE: terse, occult terminal readout — a 90s console from a lab that should not exist.
+   IDEA: a Numogram switchboard: ten zone-lamps feeding a mesh-tag decoder.
+   PICTURE: the row of ten glowing zone-spheres with planetary glyphs, and the live tag read large.
+   COLOUR and TYPE: black ground, phosphor green #39ff6a lead, deep moss #0f3d1c support, pale acid #c8ffd4 accent; VT323 display + Share Tech Mono body.
+   LAYOUT: one bevelled program window; title bar, sphere panel, readout panel, status bar. Stacks on phones. */
+:root{color-scheme:dark;--bg:#000;--win:#030a05;--panel:#06140a;--line:#164d26;--dim:#0f3d1c;--g:#39ff6a;--g2:#1fb84a;--pale:#c8ffd4;--mute:#5f9a6e}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;background:var(--bg);color:var(--g);font:16px/1.5 "Share Tech Mono","Lucida Console","Courier New",monospace;overflow-x:clip}
+body{min-height:100vh;padding:clamp(10px,3vw,40px) max(3vw,10px);
+  background:radial-gradient(ellipse at 50% 0%,#04210d 0%,#000 60%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);z-index:9}
+.win{max-width:1100px;margin:0 auto;background:var(--win);border:2px solid var(--g2);
+  box-shadow:0 0 0 1px #000,0 0 0 3px var(--dim),0 0 40px rgba(57,255,106,.12)}
+.bar{display:flex;align-items:center;gap:10px;padding:5px 8px;background:linear-gradient(90deg,#0d4a20,#06240f 70%,#0d4a20);border-bottom:2px solid var(--g2);font-family:VT323,monospace;font-size:22px;color:var(--pale);letter-spacing:.04em}
+.bar .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .b{width:20px;height:18px;border:1px solid var(--g);display:grid;place-items:center;font-size:16px;line-height:1;color:var(--g)}
+.menu{display:flex;flex-wrap:wrap;gap:2px 22px;padding:4px 12px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mute)}
+.menu u{color:var(--g)}
+.body{padding:clamp(14px,2.5vw,28px)}
+fieldset{border:1px solid var(--line);margin:0 0 22px;padding:16px clamp(8px,2vw,20px) 18px;background:var(--panel)}
+legend{font-family:VT323,monospace;font-size:20px;color:var(--pale);padding:0 8px}
+.row{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:clamp(4px,1.2vw,14px)}
+.z{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pl{font-size:clamp(15px,2vw,22px);line-height:1;color:var(--mute);height:24px;font-family:"Segoe UI Symbol","DejaVu Sans","Noto Sans Symbols",sans-serif}
+.pn{font-size:11px;color:#3c6e4a;text-transform:uppercase;height:14px;white-space:nowrap}
+.sp{all:unset;cursor:pointer;width:min(72px,100%);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  font-family:VT323,monospace;font-size:clamp(24px,4vw,40px);color:#1d5a2c;
+  background:radial-gradient(circle at 35% 30%,#123a1c 0%,#06160b 45%,#010402 100%);
+  box-shadow:inset 0 -4px 10px rgba(0,0,0,.9),inset 0 2px 3px rgba(80,160,100,.15),0 0 0 1px var(--line);
+  transition:background .12s,color .12s,box-shadow .12s}
+.sp:hover{color:var(--g2);box-shadow:inset 0 -4px 10px rgba(0,0,0,.9),0 0 0 1px var(--g2)}
+.sp:focus-visible{outline:2px dashed var(--pale);outline-offset:4px}
+.sp[aria-pressed=true]{color:#002a0c;
+  background:radial-gradient(circle at 35% 30%,#eaffef 0%,#6bff92 22%,#22d150 55%,#0a6b25 100%);
+  box-shadow:inset 0 -5px 10px rgba(0,60,20,.6),0 0 16px rgba(57,255,106,.75),0 0 0 1px var(--g)}
+.z.on .pl{color:var(--g);text-shadow:0 0 6px rgba(57,255,106,.7)}
+.z.on .pn{color:var(--g2)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:16px;font-size:13px;color:var(--mute)}
+.btn{all:unset;cursor:pointer;padding:8px 16px;min-height:28px;border:1px solid var(--g2);color:var(--g);font-family:VT323,monospace;font-size:20px;
+  box-shadow:2px 2px 0 var(--dim);background:#041007}
+.btn:hover{background:var(--dim)}.btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--dim)}
+.btn:focus-visible{outline:2px dashed var(--pale);outline-offset:3px}
+.out{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px}
+.tag{font-family:VT323,monospace;font-size:clamp(44px,8vw,84px);line-height:1;color:var(--g);text-shadow:0 0 12px rgba(57,255,106,.55);word-break:break-word}
+.tag.null{color:#2c6a3c;text-shadow:none}
+.ord{font-family:VT323,monospace;font-size:clamp(26px,3.5vw,36px);color:var(--pale);margin-top:6px}
+.cur{display:inline-block;width:.55em;height:.9em;background:var(--g);vertical-align:-.08em;margin-left:.15em;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cur{animation:none}}
+dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;align-items:baseline}
+dt{color:var(--mute);font-size:13px;text-transform:uppercase;white-space:nowrap}
+dd{margin:0;color:var(--pale)}
+.bin{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;max-width:340px;font-family:VT323,monospace;text-align:center}
+.bin b{font-weight:400;font-size:28px;border:1px solid var(--line);background:#020904;color:#2a5f38;line-height:1.15}
+.bin b.on{color:var(--g);border-color:var(--g2);background:#072611}
+.bin i{font-style:normal;font-size:13px;color:#3c6e4a}
+.sec{border-top:1px dashed var(--line);margin-top:16px;padding-top:14px}
+.kind{font-family:VT323,monospace;font-size:24px;color:var(--g);margin:0 0 8px}
+.big{font-family:VT323,monospace;font-size:clamp(28px,4vw,40px);color:var(--g);line-height:1.05}
+.desc{color:var(--pale);font-size:17px;margin:6px 0 0;max-width:62ch}
+.door{margin-top:12px;padding:8px 12px;border:1px solid var(--g2);background:#072611;color:var(--g)}
+.door span{color:var(--mute);font-size:13px;text-transform:uppercase;margin-right:8px}
+.idle{color:var(--mute);font-size:15px}
+.status{display:flex;flex-wrap:wrap;gap:4px 18px;padding:4px 10px;border-top:2px solid var(--g2);background:#020904;font-size:13px;color:var(--mute)}
+.status span{border-right:1px solid var(--line);padding-right:18px}.status span:last-child{border:0}
+@media(max-width:760px){.out{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){
+  .row{grid-template-columns:repeat(5,minmax(0,1fr));row-gap:16px}
+  .menu{display:none}.bar{font-size:18px}
+  .pn{font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="win" role="application" aria-label="Sarkonian mesh-tag calculator">
+  <div class="bar"><span class="b" aria-hidden="true">≡</span><span class="t">PANDEMONIUM.EXE — Sarkonian Mesh-Tag Calculator v1.0</span><span class="b" aria-hidden="true">_</span><span class="b" aria-hidden="true">×</span></div>
+  <div class="menu" aria-hidden="true"><span><u>F</u>ile</span><span><u>Z</u>ones</span><span><u>M</u>esh</span><span><u>N</u>umogram</span><span><u>H</u>elp</span></div>
+  <div class="body">
+    <fieldset>
+      <legend>[ ZONE SELECTOR ]</legend>
+      <div class="row" id="row"></div>
+      <div class="ctl">
+        <span>Click a sphere or press keys 0–9 to toggle a Zone. Esc clears.</span>
+        <button class="btn" id="clr" type="button">CLEAR ALL</button>
+      </div>
+    </fieldset>
+    <div class="out">
+      <fieldset>
+        <legend>[ MESH-TAG ]</legend>
+        <div class="tag null" id="tag">NON-EXISTENT</div>
+        <div class="ord" id="ord">#0<span class="cur" aria-hidden="true"></span></div>
+        <div class="sec">
+          <dl>
+            <dt>Binary</dt>
+            <dd><div class="bin" id="bin"></div></dd>
+            <dt>Code</dt><dd id="code">—</dd>
+            <dt>Zones on</dt><dd id="cnt">0</dd>
+          </dl>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>[ ENTITY ]</legend>
+        <div id="ent"><p class="idle">No Zone active. The mesh is silent.</p></div>
+      </fieldset>
+    </div>
+  </div>
+  <div class="status"><span id="st1">READY</span><span>1024 MESH-TAGS</span><span>45 DEMONS</span><span>ZONE ORDER 9876543210</span></div>
+</div>
+
+<script>
+{
+const zones = {
+  "0": "The protocosmic abyss anticipating primal reality, fusing indissociably into the ultimate gulfs of chaotic unbeing",
+  "1": "Enduring ideas, historical time and remembrance (recall)",
+  "2": "Epidemic fertility (bacterial fission, clones, replicants, vampiric contagion)",
+  "3": "Extrinsic fatality, unexpected messages, and xenosignal",
+  "4": "Random calamity",
+  "5": "Decision, judgement, and war",
+  "6": "Gnostic death, event horizon, and the absolutely unexpected",
+  "7": "Genealogy, ancestor worship and inherited wealth",
+  "8": "Submerged currents of fatality",
+  "9": "Prehuman cultures of the Old Ones"
+};
+const planets = [["☉","Sun"],["☿","Mercury"],["♀","Venus"],["⊕","Earth"],["♂","Mars"],["♃","Jupiter"],["♄","Saturn"],["♅","Uranus"],["♆","Neptune"],["♇","Pluto"]];
+const matrix = {
+  "1::0": { mesh: "00", name: "LURGO (LEGBA, TERMINAL/INITIATOR)", description: "Amphidemon of Openings (The Door of Doors)", door: "1st Door (The Pod) [Mercury]" },
+  "2::0": { mesh: "01", name: "DUODDOD (DUPLICITOUS REDOUBLER)", description: "Amphidemon of Abstract Addiction", door: "2nd Door (The Crypt) [Venus]" },
+  "2::1": { mesh: "02", name: "DOOGU (THE BLOB)", description: "Cyclic Chronodemon of Splitting-Waters" },
+  "3::0": { mesh: "03", name: "IXIX (YIX)", description: "Chaotic Xenodemon of Cosmic Indifference", door: "3rd Door (The Swirl) [Earth]" },
+  "3::1": { mesh: "04", name: "IXIGOOL (DJINN OF THE MAGI)", description: "Amphidemon of Tridentity (Sphinx-time)" },
+  "3::2": { mesh: "05", name: "IXIDOD (KING SID)", description: "Amphidemon of Escape-velocity" },
+  "4::0": { mesh: "06", name: "KRAKO (KRU, KARAK-OA)", description: "Amphidemon of Burning-Hail", door: "4th Door (Delta) [Mars]" },
+  "4::1": { mesh: "07", name: "SUKUGOOL (OLD SKUG)", description: "Cyclic Chronodemon of deluge and implosion" },
+  "4::2": { mesh: "08", name: "SKOODU (LI'L SCUD)", description: "Cyclic Chronodemon of Switch-Crazes" },
+  "4::3": { mesh: "09", name: "SKARKIX (SHARKY, SCAR-HEAD)", description: "Amphidemon of anti-evolution (eddies of the Delta)" },
+  "5::0": { mesh: "10", name: "TOKHATTO (OLD TOKER, TOP CAT)", description: "Amphidemon of Talismania", door: "5th Door (Hyperborea) [Jupiter]" },
+  "5::1": { mesh: "11", name: "TUKKAMU", description: "Cyclic Chronodemon of Pathogenesis" },
+  "5::2": { mesh: "12", name: "KUTTADID (KITTY)", description: "Cyclic Chronodemon of Precarious States" },
+  "5::3": { mesh: "13", name: "TIKKITIX (TICKLER)", description: "Amphidemon of Vortical Delirium" },
+  "5::4": { mesh: "14", name: "KATAK", description: "Syzygetic Chronodemon of Cataclysmic Convergence" },
+  "6::0": { mesh: "15", name: "TCHU (TCHANUL)", description: "Chaotic Xenodemon of Ultimate Outsideness (and unnamable things)", door: "6th Door (Undu) [Saturn]" },
+  "6::1": { mesh: "16", name: "DJUNGO", description: "Amphidemon of Subtle Involvements (and intricate puzzles)" },
+  "6::2": { mesh: "17", name: "DJUDDHA (JUDD DREAD)", description: "Amphidemon of Artificial Turbulence (complex-dynamics simulations)" },
+  "6::3": { mesh: "18", name: "DJYNXX (CHING, THE JINN)", description: "Syzygetic Xenodemon of Time-Lapse" },
+  "6::4": { mesh: "19", name: "TCHAKKI (CHUCKLES)", description: "Amphidemon of Combustion" },
+  "6::5": { mesh: "20", name: "TCHATTUK (ONE EYED JACK, DJATKA)", description: "Amphidemon of Unscreened Matrix" },
+  "7::0": { mesh: "21", name: "PUPPO (THE PUP)", description: "Amphidemon of Larval Regression", door: "7th Door (Akasha) [Uranus]" },
+  "7::1": { mesh: "22", name: "BUBBAMU (BUBS)", description: "Cyclic Chronodemon of Relapse" },
+  "7::2": { mesh: "23", name: "ODDUBB (ODBA)", description: "Syzygetic Chronodemon of Swamp-Labyrinths (and blind-doubles)" },
+  "7::3": { mesh: "24", name: "PABBAKIS (PABZIX)", description: "Amphidemon of Interference (and fakery)" },
+  "7::4": { mesh: "25", name: "ABABBATOK (ABRACADABRA)", description: "Cyclic Chronodemon of Suspended Decay" },
+  "7::5": { mesh: "26", name: "PAPATAKOO (PATAKU)", description: "Cyclic Chronodemon of Calendric Time" },
+  "7::6": { mesh: "27", name: "BOBOBJA (BUBBLES, BEELZEBUB)", description: "Amphidemon of Teeming Pestilence" },
+  "8::0": { mesh: "28", name: "MINOMMO", description: "Amphidemon of Submergence", door: "8th Door (Limbo) [Neptune]" },
+  "8::1": { mesh: "29", name: "MUR MUR (MURRUMUR, MU(MU))", description: "Syzygetic Chronodemon of the Deep Ones" },
+  "8::2": { mesh: "30", name: "NAMMAMAD", description: "Cyclic Chronodemon of Subterranean Commerce" },
+  "8::3": { mesh: "31", name: "MUMMUMIX (MIX-UP)", description: "Amphidemon of Insidious Fog (Nyarlathotep)" },
+  "8::4": { mesh: "32", name: "NUMKO (OLD NUK)", description: "Cyclic Chronodemon of Autochthony" },
+  "8::5": { mesh: "33", name: "MUNTUK (MANTA, MANITOU)", description: "Cyclic Chronodemon of Arid Seabeds" },
+  "8::6": { mesh: "34", name: "MOMMOLJO (MAMA JO)", description: "Amphidemon of Xenogenesis" },
+  "8::7": { mesh: "35", name: "MOMBBO", description: "Cyclic Chronodemon of Hybridity" },
+  "9::0": { mesh: "36", name: "UTTUNUL", description: "Syzygetic Xenodemon of Atonality", door: "9th Door (Cthelll) [Pluto]" },
+  "9::1": { mesh: "37", name: "TUTAGOOL (YETTUK)", description: "Amphidemon of Punctuality" },
+  "9::2": { mesh: "38", name: "UNNUNDDO (THE FALSE NUN)", description: "Amphidemon of Endless Uncasing (onion-skin horror)" },
+  "9::3": { mesh: "39", name: "UNUNUTTIX (TICK-TOCK)", description: "Chaotic Xenodemon of Absolute Coincidence" },
+  "9::4": { mesh: "40", name: "UNUNAK (NUKE)", description: "Amphidemon of Convulsions" },
+  "9::5": { mesh: "41", name: "TUKUTU (KILLER-KATE)", description: "Amphidemon of Death-Strokes" },
+  "9::6": { mesh: "42", name: "UNNUTCHI (OUTCH, T'AI CHI)", description: "Chaotic Xenodemon of Coiling Outsideness" },
+  "9::7": { mesh: "43", name: "NUTTUBAB (NUT-CRACKER)", description: "Amphidemon of Metaloid Unlife" },
+  "9::8": { mesh: "44", name: "UMMNU (OM, OMNI, AMEN, OMEN)", description: "Amphidemon of Earth-Screams" }
+};
+
+const ORDER = [9,8,7,6,5,4,3,2,1,0];
+const on = new Set();
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("row").innerHTML = ORDER.map(z => `
+  <div class="z" id="z${z}">
+    <span class="pl" title="${planets[z][1]}">${planets[z][0]}&#xFE0E;</span>
+    <span class="pn">${planets[z][1]}</span>
+    <button class="sp" type="button" data-z="${z}" aria-pressed="false" aria-label="Zone ${z} (${planets[z][1]})">${z}</button>
+  </div>`).join('');
+
+function render(){
+  const zs = [...on].sort((a,b) => b-a);
+  const n = zs.reduce((s,z) => s + (1<<z), 0);
+  const bits = n.toString(2).padStart(10,'0');
+
+  ORDER.forEach(z => {
+    const a = on.has(z);
+    $("z"+z).classList.toggle("on", a);
+    $("z"+z).querySelector(".sp").setAttribute("aria-pressed", a);
+  });
+
+  const tag = $("tag");
+  if (n === 0) { tag.textContent = "NON-EXISTENT"; tag.classList.add("null"); }
+  else { tag.textContent = "SAKN-" + (n-1); tag.classList.remove("null"); }
+  $("ord").innerHTML = "#" + n + '<span class="cur" aria-hidden="true"></span>';
+  $("bin").innerHTML = [...bits].map(b => `<b class="${b==='1'?'on':''}">${b}</b>`).join('') + ORDER.map(z => `<i>${z}</i>`).join('');
+  $("code").textContent = n ? zs.join('') : "—";
+  $("cnt").textContent = zs.length;
+
+  let h;
+  if (zs.length === 0) {
+    h = `<p class="idle">No Zone active. The mesh is silent.</p>`;
+  } else if (zs.length === 1) {
+    const z = zs[0];
+    h = `<p class="kind">&gt; ZONE</p>
+      <div class="big">ZONE-${z} <span style="color:var(--mute);font-size:.7em">${planets[z][0]}&#xFE0E; ${planets[z][1]}</span></div>
+      <p class="desc">${esc(zones[z])}</p>`;
+  } else if (zs.length === 2) {
+    const key = zs[0] + "::" + zs[1], d = matrix[key];
+    h = `<p class="kind">&gt; DEMON</p>
+      <dl>
+        <dt>Net-span</dt><dd class="big">${key}</dd>
+        <dt>Mesh</dt><dd class="big">#${d.mesh}</dd>
+        <dt>Name</dt><dd>${esc(d.name)}</dd>
+        <dt>Type</dt><dd>${esc(d.description)}</dd>
+      </dl>
+      ${d.door ? `<div class="door"><span>Door</span>${esc(d.door)}</div>` : ""}`;
+  } else {
+    h = `<p class="kind">&gt; IMPULSE-ENTITY</p>
+      <dl>
+        <dt>Net-span</dt><dd class="big">${zs.join("::")}</dd>
+        <dt>Zones</dt><dd>${zs.length}</dd>
+      </dl>`;
+  }
+  $("ent").innerHTML = h;
+  $("st1").textContent = n ? "MESH " + bits : "READY";
+}
+
+function toggle(z){ on.has(z) ? on.delete(z) : on.add(z); render(); }
+$("row").addEventListener("click", e => {
+  const b = e.target.closest(".sp"); if (b) toggle(+b.dataset.z);
+});
+$("clr").addEventListener("click", () => { on.clear(); render(); });
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)) { toggle(+e.key); }
+  else if (e.key === "Escape") { on.clear(); render(); }
+});
+render();
+}
+</script>
+</body>
+</html>
