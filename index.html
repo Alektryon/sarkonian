@@ -54,8 +54,12 @@ legend{font-family:VT323,monospace;font-size:20px;color:var(--pale);padding:0 8p
 .out{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px}
 .tag{font-family:VT323,monospace;font-size:clamp(44px,8vw,84px);line-height:1;color:var(--g);text-shadow:0 0 12px rgba(57,255,106,.55);word-break:break-word}
 .tag.null{color:#2c6a3c;text-shadow:none}
-.ord{font-family:VT323,monospace;font-size:clamp(26px,3.5vw,36px);color:var(--pale);margin-top:6px}
-.cur{display:inline-block;width:.55em;height:.9em;background:var(--g);vertical-align:-.08em;margin-left:.15em;animation:blink 1.1s steps(1) infinite}
+.olab{color:var(--mute);font-size:13px;text-transform:uppercase;margin-top:12px}
+.ord{font-family:VT323,monospace;font-size:clamp(26px,3.5vw,36px);color:var(--pale);margin-top:2px}
+.cur{display:inline-block;width:.6em;height:1em;background:var(--g);vertical-align:-.15em;margin-left:8px;animation:blink 1.1s steps(1) infinite}
+.status .sbox{display:inline-flex;align-items:center}
+.status .sbox span{border:0;padding:0}
+.status .sbox{padding-right:18px}
 @keyframes blink{50%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.cur{animation:none}}
 dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;align-items:baseline}
@@ -99,7 +103,8 @@ dd{margin:0;color:var(--pale)}
       <fieldset>
         <legend>[ MESH-TAG ]</legend>
         <div class="tag null" id="tag">NON-EXISTENT</div>
-        <div class="ord" id="ord">#0<span class="cur" aria-hidden="true"></span></div>
+        <div class="olab">Order-number</div>
+        <div class="ord" id="ord">#0</div>
         <div class="sec">
           <dl>
             <dt>Binary</dt>
@@ -115,7 +120,7 @@ dd{margin:0;color:var(--pale)}
       </fieldset>
     </div>
   </div>
-  <div class="status"><span id="st1">READY</span><span>1024 MESH-TAGS</span><span>45 DEMONS</span><span>ZONE ORDER 9876543210</span></div>
+  <div class="status"><span class="sbox"><span id="st1">READY</span><span class="cur" aria-hidden="true"></span></span><span>1024 MESH-TAGS</span><span>45 DEMONS</span><span>ZONE ORDER 9876543210</span></div>
 </div>
 
 <script>
@@ -207,7 +212,7 @@ function render(){
   const tag = $("tag");
   if (n === 0) { tag.textContent = "NON-EXISTENT"; tag.classList.add("null"); }
   else { tag.textContent = "SAKN-" + (n-1); tag.classList.remove("null"); }
-  $("ord").innerHTML = "#" + n + '<span class="cur" aria-hidden="true"></span>';
+  $("ord").textContent = "#" + n;
   $("bin").innerHTML = [...bits].map(b => `<b class="${b==='1'?'on':''}">${b}</b>`).join('') + ORDER.map(z => `<i>${z}</i>`).join('');
   $("code").textContent = n ? zs.join('') : "—";
   $("cnt").textContent = zs.length;
@@ -233,7 +238,7 @@ function render(){
   } else {
     h = `<p class="kind">&gt; IMPULSE-ENTITY</p>
       <dl>
-        <dt>Net-span</dt><dd class="big">${zs.join("::")}</dd>
+        <dt>Net-span</dt><dd class="big">${zs.join(":")}</dd>
         <dt>Zones</dt><dd>${zs.length}</dd>
       </dl>`;
   }
