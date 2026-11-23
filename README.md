@@ -28,4 +28,8 @@ Each Zone *z* is a bit worth 2^z. The sum of the active Zones gives the order-nu
 
 Based on the Numogram and Pandemonium Matrix of the CCRU (Cybernetic Culture Research Unit).
 
+## A word of appreciation...
+
+To [Lillian Patch](https://xeno.cx/) who helped me understanding how the Sarkonian mesh-tags work.
+
 Vibe coded with [Claude](https://claude.ai).
