@@ -9,7 +9,7 @@ Select any combination of the ten Zones (9–0) and the app instantly returns:
 - **Always:** the Sarkonian mesh-tag (e.g. `SAKN-137`), its order-number (`#138`) and the 10-bit binary code (`0010001010`, Zones ordered `9876543210`).
 - **1 Zone:** a short description of that Zone.
 - **2 Zones:** the Demon's net-span, mesh-number (`#00`–`#44`), name and description, plus its Door when the net-span contains Zone-0.
-- **3 or more Zones:** the Impulse-Entity's net-span, in descending order (e.g. `7::3::1`).
+- **3 or more Zones:** the Impulse-Entity's net-span, in descending order (e.g. `7:3:1`).
 
 With no Zone selected, the mesh-tag is *non-existent* (`#0`, `0000000000`).
 
