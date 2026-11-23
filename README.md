@@ -11,7 +11,7 @@ Select any combination of the ten Zones (9–0) and the app instantly returns:
 - **2 Zones:** the Demon's net-span, mesh-number (`#00`–`#44`), name and description, plus its Door when the net-span contains Zone-0.
 - **3 or more Zones:** the Impulse-Entity's net-span, in descending order (e.g. `7:3:1`).
 
-With no Zone selected, the mesh-tag is *non-existent* (`#0`, `0000000000`).
+With no Zone selected, the mesh-tag is *unassigned* (`#0`, `0000000000`).
 
 ## How to use
 
