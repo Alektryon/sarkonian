@@ -32,4 +32,6 @@ Based on the Numogram and Pandemonium Matrix of the CCRU (Cybernetic Culture Res
 
 To [Lillian Patch](https://xeno.cx/) who helped me understanding how the Sarkonian mesh-tags work.
 
+---
+
 Vibe coded with [Claude](https://claude.ai).
