@@ -103,7 +103,7 @@ dd{margin:0;color:var(--pale)}
     <div class="out">
       <fieldset>
         <legend>[ SARKONIAN MESH-TAG ]</legend>
-        <div class="tag null" id="tag">NON-EXISTENT</div>
+        <div class="tag null" id="tag">UNASSIGNED</div>
         <div class="orow"><span class="olab">Order-number</span><span class="ord" id="ord">#0</span></div>
         <div class="sec">
           <dl>
@@ -210,7 +210,7 @@ function render(){
   });
 
   const tag = $("tag");
-  if (n === 0) { tag.textContent = "NON-EXISTENT"; tag.classList.add("null"); }
+  if (n === 0) { tag.textContent = "UNASSIGNED"; tag.classList.add("null"); }
   else { tag.textContent = String(n - 1).padStart(4, "0"); tag.classList.remove("null"); }
   $("ord").textContent = "#" + n;
   $("bin").innerHTML = [...bits].map(b => `<b class="${b==='1'?'on':''}">${b}</b>`).join('') + ORDER.map(z => `<i>${z}</i>`).join('');
