@@ -126,16 +126,16 @@ dd{margin:0;color:var(--pale)}
 <script>
 {
 const zones = {
-  "0": "The protocosmic abyss anticipating primal reality, fusing indissociably into the ultimate gulfs of chaotic unbeing",
-  "1": "Enduring ideas, historical time and remembrance (recall)",
-  "2": "Epidemic fertility (bacterial fission, clones, replicants, vampiric contagion)",
-  "3": "Extrinsic fatality, unexpected messages, and xenosignal",
-  "4": "Random calamity",
-  "5": "Decision, judgement, and war",
-  "6": "Gnostic death, event horizon, and the absolutely unexpected",
-  "7": "Genealogy, ancestor worship and inherited wealth",
-  "8": "Submerged currents of fatality",
-  "9": "Prehuman cultures of the Old Ones"
+  "0": { description: "The protocosmic abyss anticipating primal reality, fusing indissociably into the ultimate gulfs of chaotic unbeing", region: "Plex", pylon: "Root (Deep Past)", quasiphonic: '"eiaoung"' },
+  "1": { description: "Enduring ideas, historical time and remembrance (recall)", region: "Time-Circuit", pylon: "Central (Memories & Dreams)", quasiphonic: '"gl"' },
+  "2": { description: "Epidemic fertility (bacterial fission, clones, replicants, vampiric contagion)", region: "Time-Circuit", pylon: "Right (Creative Power)", quasiphonic: '"dt"' },
+  "3": { description: "Extrinsic fatality, unexpected messages, and xenosignal", region: "Warp", pylon: "Crown (Far Future)", quasiphonic: '"zx"' },
+  "4": { description: "Random calamity", region: "Time-Circuit", pylon: "Left (Destructive Power)", quasiphonic: '"skr"' },
+  "5": { description: "Decision, judgement, and war", region: "Time-Circuit", pylon: "Left (Destructive Power)", quasiphonic: '"ktt"' },
+  "6": { description: "Gnostic death, event horizon, and the absolutely unexpected", region: "Warp", pylon: "Crown (Far Future)", quasiphonic: '"tch"' },
+  "7": { description: "Genealogy, ancestor worship and inherited wealth", region: "Time-Circuit", pylon: "Right (Creative Power)", quasiphonic: '"pb"' },
+  "8": { description: "Submerged currents of fatality", region: "Time-Circuit", pylon: "Central (Memories & Dreams)", quasiphonic: '"mnm"' },
+  "9": { description: "Prehuman cultures of the Old Ones", region: "Plex", pylon: "Root (Deep Past)", quasiphonic: '"tn"' }
 };
 const planets = [["☉","Sun"],["☿","Mercury"],["♀","Venus"],["⊕","Earth"],["♂","Mars"],["♃","Jupiter"],["♄","Saturn"],["♅","Uranus"],["♆","Neptune"],["♇","Pluto"]];
 const matrix = {
@@ -224,7 +224,12 @@ function render(){
     const z = zs[0];
     h = `<p class="kind">&gt; ZONE</p>
       <div class="big">ZONE-${z} <span style="color:var(--mute);font-size:.7em">${planets[z][0]}&#xFE0E; ${planets[z][1]}</span></div>
-      <p class="desc">${esc(zones[z])}</p>`;
+      <p class="desc">${esc(zones[z].description)}</p>
+      <dl style="margin-top:14px">
+        <dt>Region</dt><dd>${esc(zones[z].region)}</dd>
+        <dt>Pylon</dt><dd>${esc(zones[z].pylon)}</dd>
+        <dt>Quasiphonic</dt><dd>${esc(zones[z].quasiphonic)}</dd>
+      </dl>`;
   } else if (zs.length === 2) {
     const key = zs[0] + "::" + zs[1], d = matrix[key];
     h = `<p class="kind">&gt; DEMON</p>
